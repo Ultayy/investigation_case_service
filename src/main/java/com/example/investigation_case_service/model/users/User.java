@@ -1,6 +1,6 @@
 package com.example.investigation_case_service.model.users;
 
-import com.example.investigation_case_service.model.enums.Role;
+import com.example.investigation_case_service.model.enums.users.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +23,7 @@ public class User {
     private String login;
 
     @Column(name = "password_hash", nullable = false)
-    private String passwordHash;                 // BCrypt
+    private String passwordHash;
 
     @Column(name = "full_name", nullable = false)
     private String fullName;
@@ -47,4 +47,16 @@ public class User {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
+
+    @Column(unique = true, length = 12)
+    private String iin;
+
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Column(name = "father_name")
+    private String fatherName;
 }

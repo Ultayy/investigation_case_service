@@ -23,10 +23,12 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(a -> a
-                        .requestMatchers("/auth/login", "/auth/refresh", "/error").permitAll()
+                        .requestMatchers("/auth/login", "/auth/refresh", "/auth/signup", "/auth/regions", "/error").permitAll()
+                        .requestMatchers("/auth/forgot-password", "/auth/verify-reset-code", "/auth/reset-password").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("SYSTEM_ADMIN")
                         .requestMatchers("/reg/admin/**").hasRole("REGIONAL_ADMIN")
+                        .requestMatchers("/investigator/**").hasRole("INVESTIGATOR")
                         .anyRequest().authenticated())
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint((req, res, ex) -> {

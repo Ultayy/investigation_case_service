@@ -1,5 +1,5 @@
 package com.example.investigation_case_service.model.cases;
-import com.example.investigation_case_service.model.enums.AuditEventType;
+import com.example.investigation_case_service.model.enums.cases.AuditEventType;
 import com.example.investigation_case_service.model.users.User;
 import jakarta.persistence.*;
 import lombok.*;

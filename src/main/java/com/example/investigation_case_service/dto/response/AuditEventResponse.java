@@ -1,7 +1,7 @@
 package com.example.investigation_case_service.dto.response;
 
 import com.example.investigation_case_service.model.cases.AuditEvent;
-import com.example.investigation_case_service.model.enums.AuditEventType;
+import com.example.investigation_case_service.model.enums.cases.AuditEventType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -11,8 +11,10 @@ import com.example.investigation_case_service.repository.RefreshTokenRepository;
 import com.example.investigation_case_service.repository.RegionRepository;
 import com.example.investigation_case_service.repository.UserRepository;
 import com.example.investigation_case_service.service.AdminService;
+import com.example.investigation_case_service.util.Pages;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,8 +33,8 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserResponse> listUsers() {
-        return userRepository.findAllWithRegion().stream().map(UserResponse::from).toList();
+    public Page<UserResponse> listUsers(int page, int size) {
+        return userRepository.findAllWithRegion(Pages.of(page, size)).map(UserResponse::from);
     }
 
     @Override

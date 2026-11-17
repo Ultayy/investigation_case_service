@@ -9,6 +9,7 @@ import com.example.investigation_case_service.service.AdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -30,14 +32,15 @@ public class AdminContreoller {
 
     @GetMapping("/users")
     @Operation(summary = "Получить пользователей")
-    public List<UserResponse> users() {
-        return adminService.listUsers();
+    public ResponseEntity<Page<UserResponse>> users(@RequestParam(name = "page", defaultValue = "0") int page,
+                                    @RequestParam(name = "size", defaultValue = "20") int size) {
+        return ResponseEntity.ok(adminService.listUsers(page, size));
     }
 
     @GetMapping("/regions")
     @Operation(summary = "Получить регионы")
-    public List<RegionResponse> regions() {
-        return adminService.listRegions();
+    public ResponseEntity<List<RegionResponse>> regions() {
+        return ResponseEntity.ok(adminService.listRegions());
     }
 
     @PostMapping("/user/create")
@@ -48,9 +51,9 @@ public class AdminContreoller {
 
     @PatchMapping("/users/{userId}")
     @Operation(summary = "Обновление пользователя")
-    public UserResponse updateUser(@PathVariable("userId") Long userId,
-                              @RequestBody UpdateUserRequest request,
+    public ResponseEntity<UserResponse> updateUser(@PathVariable("userId") Long userId,
+                              @Valid @RequestBody UpdateUserRequest request,
                               @AuthenticationPrincipal AppUserPrincipal user) {
-        return adminService.updateUser(userId, request, user.id());
+        return ResponseEntity.ok(adminService.updateUser(userId, request, user.id()));
     }
 }

@@ -1,6 +1,6 @@
 package com.example.investigation_case_service.security;
 
-import com.example.investigation_case_service.model.enums.Role;
+import com.example.investigation_case_service.model.enums.users.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 

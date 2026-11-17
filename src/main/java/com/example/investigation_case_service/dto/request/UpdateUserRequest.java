@@ -1,6 +1,6 @@
 package com.example.investigation_case_service.dto.request;
 
-import com.example.investigation_case_service.model.enums.Role;
+import com.example.investigation_case_service.model.enums.users.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

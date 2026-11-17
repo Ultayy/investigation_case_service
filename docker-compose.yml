@@ -15,6 +15,30 @@ services:
       timeout: 3s
       retries: 10
 
+  minio:
+    image: docker.io/pgsty/minio:RELEASE.2026-08-04T00-00-00Z
+    container_name: minio
+    restart: unless-stopped
+
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+
+    command: server /data --console-address ":9001"
+
+    volumes:
+      - minio_data:/data
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
   app:
     build: .
     depends_on:
@@ -26,8 +50,16 @@ services:
       SPRING_DATASOURCE_PASSWORD: "00000000"
       JWT_SECRET: ${JWT_SECRET:-dev-only-secret-change-me-0123456789abcdef}
       APP_SECURITY_LOCK_DURATION: ${APP_SECURITY_LOCK_DURATION:-15m}
+      MINIO_ENDPOINT: http://minio:9000
+      MAIL_HOST: ${MAIL_HOST:-mailpit}
+      MAIL_PORT: ${MAIL_PORT:-1025}
+      MAIL_USERNAME: ${MAIL_USERNAME:-root.access.sun@gmail.com}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-Demo12345!}
+      MAIL_SMTP_AUTH: ${MAIL_SMTP_AUTH:-false}
+      MAIL_STARTTLS: ${MAIL_STARTTLS:-false}
     ports:
       - "8080:8080"
 
 volumes:
   pgdata:
+  minio_data:

@@ -5,10 +5,12 @@ import com.example.investigation_case_service.dto.request.UpdateUserRequest;
 import com.example.investigation_case_service.dto.response.RegionResponse;
 import com.example.investigation_case_service.dto.response.UserResponse;
 
+import org.springframework.data.domain.Page;
+
 import java.util.List;
 
 public interface AdminService {
-    List<UserResponse> listUsers();
+    Page<UserResponse> listUsers(int page, int size);
 
     List<RegionResponse> listRegions();
 

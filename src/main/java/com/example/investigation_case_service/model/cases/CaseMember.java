@@ -1,6 +1,6 @@
 package com.example.investigation_case_service.model.cases;
 
-import com.example.investigation_case_service.model.enums.MemberType;
+import com.example.investigation_case_service.model.enums.users.MemberType;
 import com.example.investigation_case_service.model.users.User;
 import jakarta.persistence.*;
 import lombok.Getter;

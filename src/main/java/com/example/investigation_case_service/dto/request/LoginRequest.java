@@ -1,19 +1,19 @@
 package com.example.investigation_case_service.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.NonNull;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginRequest {
-    @NonNull
+    @NotBlank
     private String login;
 
-    @NonNull
+    @NotBlank
     private String password;
 }

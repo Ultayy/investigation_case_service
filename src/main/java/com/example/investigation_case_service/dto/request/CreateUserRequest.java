@@ -1,13 +1,13 @@
 package com.example.investigation_case_service.dto.request;
 
-import com.example.investigation_case_service.model.enums.Role;
+import com.example.investigation_case_service.model.enums.users.Role;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.NonNull;
 
 @Getter
 @Setter
@@ -24,8 +24,9 @@ public class CreateUserRequest {
     @NotBlank
     private String fullName;
 
-    @NonNull
+    @NotNull
     private Role role;
 
+    @NotNull
     private Long regionId;
 }

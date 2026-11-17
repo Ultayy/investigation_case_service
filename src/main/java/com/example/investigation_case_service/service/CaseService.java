@@ -9,12 +9,14 @@ import com.example.investigation_case_service.dto.response.CaseResponse;
 import com.example.investigation_case_service.dto.response.MemberResponse;
 import com.example.investigation_case_service.security.AppUserPrincipal;
 
+import org.springframework.data.domain.Page;
+
 import java.util.List;
 
 public interface CaseService {
     CaseResponse createCase(CreateCaseRequest request, AppUserPrincipal user);
 
-    List<CaseResponse> listCases(AppUserPrincipal user);
+    Page<CaseResponse> listCases(AppUserPrincipal user, int page, int size);
 
     CaseResponse getCase(Long caseId, AppUserPrincipal user);
 
@@ -26,5 +28,5 @@ public interface CaseService {
 
     List<CaseFileResponse> listFiles(Long caseId, AppUserPrincipal user);
 
-    List<AuditEventResponse> history(Long caseId, AppUserPrincipal user);
+    Page<AuditEventResponse> history(Long caseId, AppUserPrincipal user, int page, int size);
 }

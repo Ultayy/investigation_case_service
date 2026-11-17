@@ -1,7 +1,7 @@
 package com.example.investigation_case_service.dto.response;
 
 import com.example.investigation_case_service.model.cases.Case;
-import com.example.investigation_case_service.model.enums.CaseStatus;
+import com.example.investigation_case_service.model.enums.cases.CaseStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

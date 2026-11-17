@@ -14,10 +14,10 @@ import com.example.investigation_case_service.model.cases.CaseFileRecord;
 import com.example.investigation_case_service.model.cases.CaseMember;
 import com.example.investigation_case_service.model.cases.CaseMemberId;
 import com.example.investigation_case_service.model.cases.FileAccess;
-import com.example.investigation_case_service.model.enums.AuditEventType;
-import com.example.investigation_case_service.model.enums.CaseStatus;
-import com.example.investigation_case_service.model.enums.MemberType;
-import com.example.investigation_case_service.model.enums.Role;
+import com.example.investigation_case_service.model.enums.cases.AuditEventType;
+import com.example.investigation_case_service.model.enums.cases.CaseStatus;
+import com.example.investigation_case_service.model.enums.users.MemberType;
+import com.example.investigation_case_service.model.enums.users.Role;
 import com.example.investigation_case_service.model.users.User;
 import com.example.investigation_case_service.repository.AuditEventRepository;
 import com.example.investigation_case_service.repository.CaseFileRecordRepository;
@@ -27,10 +27,13 @@ import com.example.investigation_case_service.repository.FileAccessRepository;
 import com.example.investigation_case_service.repository.UserRepository;
 import com.example.investigation_case_service.security.AppUserPrincipal;
 import com.example.investigation_case_service.service.CaseService;
+import com.example.investigation_case_service.util.Pages;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,24 +103,27 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CaseResponse> listCases(AppUserPrincipal user) {
-        List<Case> result;
+    public Page<CaseResponse> listCases(AppUserPrincipal user, int page, int size) {
+        Pageable pageable = Pages.of(page, size);
+        Page<Case> result;
         if (user.role() == Role.SYSTEM_ADMIN) {
-            result = caseRepository.findAllDetailed();
+            result = caseRepository.findAllDetailed(pageable);
         } else if (user.role() == Role.REGIONAL_ADMIN) {
-            result = caseRepository.findAllByRegion(user.regionId());
+            result = caseRepository.findAllByRegion(user.regionId(), pageable);
         } else {
-            result = caseRepository.findAccessibleTo(user.id());
+            result = caseRepository.findAccessibleTo(user.id(), pageable);
         }
-        return result.stream().map(CaseResponse::from).toList();
+        return result.map(CaseResponse::from);
     }
 
     @Override
     @Transactional(readOnly = true)
     public CaseResponse getCase(Long caseId, AppUserPrincipal user) {
         Case c = findCase(caseId);
-        if (!isOwner(c, user) || isSupervisor(c, user) || member(c, user).map(CaseMember::isCanView).orElse(false)) {
-            log.info("[{}] case is not owner or supervisor", caseId);
+        boolean canView = isOwner(c, user) || isSupervisor(c, user)
+                || member(c, user).map(CaseMember::isCanView).orElse(false);
+        if (!canView) {
+            log.info("User [{}] has no access to case [{}]", user.id(), caseId);
             throw ApiException.forbidden(NO_ACCESS);
         }
         return CaseResponse.from(c);
@@ -146,6 +152,9 @@ public class CaseServiceImpl implements CaseService {
 
         if (requset.getTitle() != null && !requset.getTitle().trim().equals(c.getTitle())) {
             String title = requset.getTitle().trim();
+            if (title.isEmpty() || title.length() > 255) {
+                throw ApiException.badRequest("Название не может быть пустым или длиннее 255 символов");
+            }
             log(c.getId(), actor, AuditEventType.CASE_UPDATED, "CASE", c.getId(),
                     "title=" + c.getTitle(), "title=" + title);
             c.setTitle(title);
@@ -174,6 +183,12 @@ public class CaseServiceImpl implements CaseService {
     public MemberResponse putMember(Long caseId, Long userId, MemberRequest requset, AppUserPrincipal user) {
         Case c = findCase(caseId);
         requireOwner(c, user);
+        if (requset == null || requset.getMemberType() == null) {
+            throw ApiException.badRequest("Обязателен memberType: PARTICIPANT или TASK_FORCE_MEMBER");
+        }
+        if (userId.equals(c.getOwner().getId())) {
+            throw ApiException.badRequest("Владелец дела не может быть его участником");
+        }
 
         User target = userRepository.findById(userId)
                 .orElseThrow(() -> ApiException.notFound("Пользователь не найден"));
@@ -284,12 +299,12 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<AuditEventResponse> history(Long caseId, AppUserPrincipal user) {
+    public Page<AuditEventResponse> history(Long caseId, AppUserPrincipal user, int page, int size) {
         Case c = findCase(caseId);
         if (!isOwner(c, user) && !isSupervisor(c, user)) {
             throw ApiException.forbidden("Нет доступа к журналу дела");
         }
-        return auditEventRepository.findAllByCase(caseId).stream().map(AuditEventResponse::from).toList();
+        return auditEventRepository.findAllByCase(caseId, Pages.of(page, size)).map(AuditEventResponse::from);
     }
 
 

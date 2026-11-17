@@ -1,7 +1,6 @@
 package com.example.investigation_case_service.dto.request;
 
-import com.example.investigation_case_service.model.enums.CaseStatus;
-import jakarta.validation.constraints.NotBlank;
+import com.example.investigation_case_service.model.enums.cases.CaseStatus;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +12,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateCaseRequest {
-    @NotBlank
     @Size(max = 255)
     private String title;
 
